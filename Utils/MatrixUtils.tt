@@ -1,0 +1,55 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="$(SolutionDir)GoE\bin\Release\GoE.exe" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+<#@ import namespace="GoE.Utils.Algorithms" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="GoE" #>
+<#@ import namespace="GoE.Utils" #>
+
+<# Type[] types = new[] {
+    typeof(GoE.Utils.MatrixD), typeof(GoE.Utils.MatrixOpTree)
+    };
+#>
+
+
+//using GoE.Utils.Algorithms;
+//using System;
+//using System.Text;
+//using System.Text.RegularExpressions;
+
+//namespace GoE.Utils
+//{
+
+
+//	public static class MatrixUtils
+    //{
+		<# foreach (var MatrixType in types) { #>
+
+        /// <summary>
+        /// expects a right stochastic matrix (aka row stochastic matrix), and returns a column vector that tells 
+        /// the what the probabilities of the matrix converge to (probability to reach each state if the matrix is raised by power of infinity)
+		/// <param name=initialStateRow> </param name=initialStateRow>
+		/// <return> a column vector s.t. result[i] tells the probability of being in state i</return>
+        /// </summary>
+        //public static <#= MatrixType.Name #>  
+		//getConvergedProbabilities<ValType>(<#= MatrixType.Name #> rowStochasticMatrix, 
+		//								   <#= MatrixType.Name #> initialStateRow) where <#= MatrixType.Name #> : AMatrix<ValType>
+        //{
+          //  <#= MatrixType.Name #> res = AMatrix<ValType>.GenerateMatrix< <#= MatrixType.Name #> >(1,rowStochasticMatrix.cols,0);
+//			initialStateRow * ( <#= MatrixType.Name #>.IdentityMatrix() - rowStochasticMatrix ).Invert();
+	//		return res; 
+      //  }
+	  //
+		//<# } #> // foreach MatrixType in types
+    //}
+	
+
+
+//}

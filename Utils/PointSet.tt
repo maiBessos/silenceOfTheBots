@@ -1,0 +1,224 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System" #>
+<#@ assembly name="System.Drawing" #>
+<#@ assembly name="$(SolutionDir)GoE\bin\Release\GoE.exe" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="GoE.Utils.Algorithms" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Drawing" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="GoE" #>
+<#@ import namespace="GoE.Utils" #>
+
+<# var ValTypes = new[] {
+    Tuple.Create("Point", "int") , 
+	Tuple.Create("PointF", "float")
+    };
+#>
+
+using GoE.Utils.Algorithms;
+using System;
+using System.Drawing;
+using System.Collections.Generic;
+using GoE.GameLogic;
+using System.Linq;
+
+namespace GoE.Utils
+{
+    namespace PointDataStructs
+    {
+
+		<# foreach (var ValType in ValTypes) { #>
+		/*
+		public class Coarse<#=ValType.Item1#>Grid
+        {
+            public Rectangle FullArea;
+            public int AreaWidth { get; protected set; }
+            public int AreaHeight { get; protected set; }
+            public  Coarse<#=ValType.Item1#>Grid(Rectangle fullArea, int areaWidth, int areaHeight)
+            {
+                FullArea = fullArea;
+                AreaWidth = areaWidth;
+                AreaHeight = areaHeight;
+                Areas = new List<<#=ValType.Item1#>>[(int)Math.Ceiling(((float)fullArea.Width) / areaWidth), (int)Math.Ceiling(((float)FullArea.Height / areaHeight))];
+                for (int x = 0; x < fullArea.Width; x += AreaWidth)
+                    for (int y = 0; y < fullArea.Height; y += areaHeight)
+                        Areas[x/ areaWidth, y/ areaHeight] = new List<<#=ValType.Item1#>>();
+            }
+
+            public void removePoint(<#=ValType.Item1#> p)
+            {
+                var area = Areas[p.X / AreaWidth, p.Y / AreaHeight];
+                for (int i = 0; i < area.Count;++i)
+                    if (area[i] == p)
+                    {
+                        area[i] = area.Last();
+                        area.RemoveAt(area.Count-1);
+                        break;
+                    }
+            }
+            public void addPoint(<#=ValType.Item1#> p)
+            {
+                Areas[p.X / AreaWidth, p.Y / AreaHeight].Add(p);
+            }
+            /// <summary>
+            /// retruns points in the grid with man distance <= 'dist'
+            /// </summary>
+            /// <param name="from"></param>
+            /// <returns></returns>
+            public List<<#=ValType.Item1#>> findPointsWithinManDistance(<#=ValType.Item1#> from, int dist)
+            {
+                List<<#=ValType.Item1#>> res = new List<<#=ValType.Item1#>>();
+                int minX = Math.Max(0,(from.X - dist) / AreaWidth);
+                int maxX = Math.Min((from.X + dist) / AreaWidth, Areas.GetLength(0)-1);
+                int minY = Math.Max(0,(from.Y - dist) / AreaHeight);
+                int maxY = Math.Min((from.Y + dist) / AreaHeight, Areas.GetLength(1)-1);
+                for (int x = minX; x <= maxX; ++x)
+                    for (int y = minY; y <= maxY; ++y)
+                        foreach (<#=ValType.Item1#> cmp in Areas[x, y])
+                            if (cmp.manDist(from) <= dist)
+                                res.Add(cmp);
+                return res;
+            }
+            List<<#=ValType.Item1#>>[,] Areas;
+        }*/
+
+		public class <#=ValType.Item1#>Set
+        {
+            List<List<<#=ValType.Item1#>>> points;
+            <#=ValType.Item2#> width;
+			<#=ValType.Item2#> minX;
+
+            /// <summary>
+            /// returns a raw structure that contains all the points in the set (some lists may be empty)
+            /// </summary>
+            public List<List<<#=ValType.Item1#>>> AllPoints { get { return points; } }
+            
+			public List<<#=ValType.Item1#>> findNearest(<#=ValType.Item1#> p, float radius)
+            {
+				List<<#=ValType.Item1#>> res = new List<<#=ValType.Item1#>>();
+                
+				float radius2 = radius*radius;
+                int minCellX = Math.Max(0,(int)((p.X - radius - minX) / width));
+				minCellX = Math.Min(minCellX, points.Count);
+                int maxCellX = Math.Max(0,(int)((p.X + radius - minX) / width));
+				maxCellX = Math.Min(maxCellX, points.Count);
+				for(int cellX = minCellX; cellX <= maxCellX; ++cellX)
+                {
+					Exceptions.ConditionalTryCatch<Exception>(() =>
+					{
+						List<<#=ValType.Item1#>> relevantList = points[cellX];
+						foreach(var cp in relevantList)
+							if(cp.distance2(p) <= radius2)
+								res.Add(cp);
+					});
+				}
+
+				return res;
+            }
+            public void removeDupliacates()
+            {
+                Count = 0;
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    List<<#=ValType.Item1#>> prevList = points[i];
+
+                    if (prevList.Count > 0)
+                    {
+                        prevList.Sort(new Comparison<<#=ValType.Item1#>>((p1, p2) => p1.Y.CompareTo(p2.Y)));
+                        List<<#=ValType.Item1#>> newPointsList = new List<<#=ValType.Item1#>>();
+                        newPointsList.Add(prevList[0]);
+                        for (int j = 1; j < prevList.Count; ++j)
+                            if (prevList[j] != prevList[j - 1])
+                                newPointsList.Add(prevList[j]);
+
+                        points[i] = newPointsList;
+                        Count += newPointsList.Count;
+                    }
+                }
+            }
+            public <#=ValType.Item1#>Set(IEnumerable<<#=ValType.Item1#>> allPoints)
+            {
+                Count = allPoints.Count();
+                if (Count == 0)
+                {
+                    minX = <#=ValType.Item2#>.MaxValue;
+                    width = 0;
+                    points = new List<List<<#=ValType.Item1#>>>();
+                    return;
+                }
+
+                minX = <#=ValType.Item2#>.MaxValue;
+                <#=ValType.Item2#> maxX = <#=ValType.Item2#>.MinValue;
+                foreach (<#=ValType.Item1#> p in allPoints)
+                {
+                    minX = Math.Min(minX, p.X);
+                    maxX = Math.Max(maxX, p.X);
+                }
+
+                int xCellCount = (int)Math.Ceiling(Math.Sqrt(allPoints.Count()));
+                int yCellCount = allPoints.Count() / xCellCount;
+
+                this.points = new List<List<<#=ValType.Item1#>>>(xCellCount);
+                for (int i = 0; i < xCellCount; ++i)
+                    this.points.Add(new List<<#=ValType.Item1#>>(yCellCount));
+
+                width = (<#=ValType.Item2#>)Math.Ceiling(Math.Max(1, (maxX + 1.0f - minX) / xCellCount));
+
+                foreach (<#=ValType.Item1#> p in allPoints)
+                    points[(int)((p.X - minX) / width)].Add(p);
+
+            }
+            public int Count { get; protected set; }
+            public bool Contains(<#=ValType.Item1#> p)
+            {
+                int x = (int)(p.X - minX);
+                if (x < 0)
+                    return false;
+
+                int cellX = (int)((p.X - minX) / width);
+                if (cellX >= points.Count)
+                    return false;
+
+                List<<#=ValType.Item1#>> relevantList = points[cellX];
+                for (int i = 0; i < relevantList.Count; ++i)
+                    if (relevantList[i] == p)
+                        return true;
+                return false;
+            }
+            
+            public bool Remove(<#=ValType.Item1#> p)
+            {
+                int x = (int)(p.X - minX);
+                if (x < 0)
+                    return false;
+
+                int cellX = (int)((p.X - minX) / width);
+                if (cellX >= points.Count)
+                    return false;
+
+                List<<#=ValType.Item1#>> relevantList = points[cellX];
+                for (int i = 0; i < relevantList.Count; ++i)
+                    if (relevantList[i] == p)
+                    {
+                        relevantList[i] = relevantList.Last();
+                        relevantList.RemoveAt(relevantList.Count - 1);
+                        --Count;
+                        return true;
+                    }
+                return false;
+            }
+        }
+		<# } #> // foreach PointType in types
+	}
+}
