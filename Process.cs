@@ -1,5 +1,5 @@
 ﻿using GoE.GameLogic;
-using GoE.GameLogic.Algorithms;
+
 using GoE.GameLogic.EvolutionaryStrategy;
 using System;
 using System.Collections.Generic;

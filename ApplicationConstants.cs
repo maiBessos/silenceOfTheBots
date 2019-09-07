@@ -446,7 +446,7 @@ namespace GoE
                 public static ArgEntry INTRUDEROBSERVER_DISTANCE_JUMP { get { return new ArgEntry("Optimizer.IntruderObserverDistanceJump", "1"); } }
                 public static ArgEntry OVERRIDE_PATROLLER_POLICY { get { return new ArgEntry("Optimizer.OverridePatrollerPolicy", "0"); } }
                 public static ArgEntry OMIT_SINGULAR_OBSERVATION_STATES { get { return new ArgEntry("Optimizer.OmitSingularObservationState", "1"); } }
-                public static ArgEntry PRE_TRANSMISSION_MOVEMENT { get { return new ArgEntry("Optimizer.PreTransmissionMovement", typeof(GoE.Policies.Intrusion.SingleTransmissionPerimOnly.Utils.DistanceDistributionPreTransmissionMovement).Name); } }
+                
 
                 // used by all genetic optimizers
                 public static ArgEntry CHROMOSOME_COUNT { get { return new ArgEntry("Optimizer.ChromosomeCount", "100"); } }
@@ -739,26 +739,7 @@ namespace GoE
                 //public static ArgEntry MAX_SEGMENT_COUNT { get { return new ArgEntry("AdvRoutingRoutersPolicyOptimizer.MaxSegments", "3"); } }
 
             }
-            public static class WSNRouterPolicyGridLP
-            {
-                public static ArgEntry ROUTER_STATISTICS_LENGTH
-                {
-                    get
-                    {
-                        return new ArgEntry("WSNRouterPolicyGridLP.RouterStatisticsLen", "5");
-                    }
-                }
-
-                public static ArgEntry OPTIMIZE_TARGET
-                {
-                    get
-                    {
-                        return new ArgEntry("WSNRouterPolicyGridLP.OptimizedTarget(0_transmissionsCount,1_maximizeTotalFlow)", 
-                            ((int)WSN.WSNRouterPolicyGridLP.OptimizationTarget.MaximizeTotalFlow).ToString(),
-                            new UniformValueList(0, Enum.GetNames(typeof(WSN.WSNRouterPolicyGridLP.OptimizationTarget)).Length - 1, true));
-                    }
-                }
-            }
+            
         }
     }
 
